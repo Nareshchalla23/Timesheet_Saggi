@@ -1,0 +1,62 @@
+﻿@model List<TImesheet_demo2.Models.Timesheet>
+
+@{
+    ViewData["Title"] = "Create Multiple Timesheet Entries";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="CreateMultiple">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <table id="timesheetTable">
+        <thead>
+            <tr>
+                <th>Project</th>
+                <th>Date</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Hours Worked</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                <tr>
+                    <td>@Html.DropDownListFor(model => model[i].ProjectId, (SelectList)ViewData["ProjectId"], new { @class = "form-control" })</td>
+                    <td>@Html.EditorFor(model => model[i].Date, new { htmlAttributes = new { @class = "form-control", type = "date" } })</td>
+                    <td>@Html.EditorFor(model => model[i].StartTime, new { htmlAttributes = new { @class = "form-control", type = "time" } })</td>
+                    <td>@Html.EditorFor(model => model[i].EndTime, new { htmlAttributes = new { @class = "form-control", type = "time" } })</td>
+                    <td>@Html.EditorFor(model => model[i].HoursWorked, new { htmlAttributes = new { @class = "form-control" } })</td>
+                    <td>@Html.EditorFor(model => model[i].Description, new { htmlAttributes = new { @class = "form-control" } })</td>
+                    <td>@Html.EditorFor(model => model[i].Status, new { htmlAttributes = new { @class = "form-control" } })</td>
+                    <td><button type="button" class="btn btn-danger removeRow">Remove</button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <button type="button" id="addRow" class="btn btn-primary">Add Row</button>
+    <button type="submit" class="btn btn-success">Submit</button>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        // JavaScript to dynamically add and remove rows
+        document.getElementById('addRow').addEventListener('click', function () {
+            // Logic to add a new row
+        });
+
+        document.querySelectorAll('.removeRow').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                // Logic to remove the row
+            });
+        });
+    </script>
+}

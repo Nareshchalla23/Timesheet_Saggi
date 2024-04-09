@@ -1,0 +1,143 @@
+﻿@model TImesheet_demo2.Models.Timesheet
+
+@{
+    ViewData["Title"] = "Create Timesheet Entry";
+    Layout = null; // Assuming you want to use this page without the layout page for demonstration
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timesheet Dashboard - Saggi Solutions</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@2.51.6/dist/full.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/3.5.0/remixicon.css" crossorigin="">
+    <style>
+        @@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #EDE7F6; /* Light purple background */
+            padding: 20px;
+            color: #000; /* Black text for readability */
+        }
+        .container {
+            background: #F3E5F5; /* Slightly darker purple for the container */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: auto;
+        }
+        h2 {
+            color: #6A1B9A; /* Darker purple */
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        #countdown {
+            font-weight: bold;
+            color: #6A1B9A; /* Darker purple for visibility */
+            margin-bottom: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>@ViewData["Title"]</h2>
+        <h2>HELLO @ViewData["UserName"]!!</h2>
+        <p id="countdown">Time remaining: 3:00 minutes</p>
+
+        <form asp-action="Create" class="form-control">
+            <div asp-validation-summary="ModelOnly" class="text-error"></div>
+
+            <div class="form-control">
+                <label asp-for="ProjectId" class="label">Project</label>
+                <select asp-for="ProjectId" asp-items="@((IEnumerable<SelectListItem>)ViewData["ProjectId"])" class="select select-bordered"></select>
+                <span asp-validation-for="ProjectId" class="text-error"></span>
+            </div>
+
+            <div class="form-control">
+                <label asp-for="Date" class="label">Date</label>
+                <input asp-for="Date" type="date" class="input input-bordered" />
+                <span asp-validation-for="Date" class="text-error"></span>
+            </div>
+
+            <div class="flex justify-between">
+                <div class="form-control w-1/2 mr-2">
+                    <label asp-for="StartTime" class="label">Start Time</label>
+                    <input asp-for="StartTime" type="time" id="startTime" class="input input-bordered" />
+                    <span asp-validation-for="StartTime" class="text-error"></span>
+                </div>
+
+                <div class="form-control w-1/2 ml-2">
+                    <label asp-for="EndTime" class="label">End Time</label>
+                    <input asp-for="EndTime" type="time" id="endTime" class="input input-bordered" />
+                    <span asp-validation-for="EndTime" class="text-error"></span>
+                </div>
+            </div>
+
+            <div class="form-control">
+                <label asp-for="HoursWorked" class="label">Hours Worked</label>
+                <input asp-for="HoursWorked" id="hoursWorked" class="input input-bordered" readonly />
+                <span asp-validation-for="HoursWorked" class="text-error"></span>
+            </div>
+
+            <div class="form-control">
+                <label asp-for="Description" class="label">Description</label>
+                <textarea asp-for="Description" class="textarea textarea-bordered h-24"></textarea>
+                <span asp-validation-for="Description" class="text-error"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary mt-4">Submit</button>
+        </form>
+
+        <p>
+            <a asp-action="Index">View Timesheet Entries</a>
+        </p>
+        <p>
+            <a asp-action="CreateMultiple">View Timesheet Entries</a>
+        </p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const startTimeInput = document.getElementById('startTime');
+            const endTimeInput = document.getElementById('endTime');
+            const hoursWorkedInput = document.getElementById('hoursWorked');
+
+            function calculateHours() {
+                const startTime = startTimeInput.value ? new Date(`1970-01-01T${startTimeInput.value}`) : null;
+                const endTime = endTimeInput.value ? new Date(`1970-01-01T${endTimeInput.value}`) : null;
+                if (startTime && endTime) {
+                    const diff = endTime - startTime;
+                    const hours = diff / (1000 * 60 * 60);
+                    hoursWorkedInput.value = hours.toFixed(2);
+                }
+            }
+
+            startTimeInput.addEventListener('change', calculateHours);
+            endTimeInput.addEventListener('change', calculateHours);
+
+            // Countdown timer logic
+            let time = 180; // 3 minutes in seconds
+            const countdownEl = document.getElementById('countdown');
+            const timer = setInterval(updateCountdown, 1000);
+
+            function updateCountdown() {
+                const minutes = Math.floor(time / 60);
+                let seconds = time % 60;
+                seconds = seconds < 10 ? '0' + seconds : seconds;
+                countdownEl.innerHTML = `Time remaining: ${minutes}:${seconds}`;
+                time--;
+
+                if (time < 0) {
+                    clearInterval(timer);
+                    window.location.href = '@Url.Action("Index", "Login")'; // Redirect to the Login page
+                }
+            }
+        });
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</body>
+</html>

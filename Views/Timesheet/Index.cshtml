@@ -1,0 +1,104 @@
+﻿@model IEnumerable<TImesheet_demo2.Models.Timesheet>
+
+@{
+    ViewData["Title"] = "Timesheet Entries";
+}
+
+<h2>@ViewData["Title"]</h2>
+<h3>Hiya @ViewData["UserName"]</h3>
+
+<form asp-action="Index" method="get">
+    <div class="form-group">
+        <label for="StartDate">Start Date</label>
+        <input type="date" id="StartDate" name="StartDate" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="EndDate">End Date</label>
+        <input type="date" id="EndDate" name="EndDate" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Filter</button>
+</form>
+
+<button id="downloadExcel" class="btn btn-success">Download to Excel</button>
+
+<table class="table" id="timesheetTable">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.TimesheetId)</th>
+            <th>@Html.DisplayNameFor(model => model.Date)</th>
+            <th>@Html.DisplayNameFor(model => model.HoursWorked)</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.TimesheetId)</td>
+                <td>@Html.DisplayFor(modelItem => item.Date)</td>
+                <td>@Html.DisplayFor(modelItem => item.HoursWorked)</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.TimesheetId">Edit</a> |
+                    <a asp-action="Delete" asp-route-id="@item.TimesheetId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<p>Total Hours Worked: <span id="totalHours">0</span></p>
+<td><a asp-action="Delete" asp-route-id="">Delete</a></td>
+<a asp-controller="Report" asp-action="Index" class="btn btn-primary">View Reports</a>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const hoursWorkedCells = document.querySelectorAll('tbody td:nth-child(3)');
+            let totalHours = 0;
+
+            hoursWorkedCells.forEach(function (cell) {
+                const hours = parseFloat(cell.textContent);
+                if (!isNaN(hours)) {
+                    totalHours += hours;
+                }
+            });
+
+            document.getElementById('totalHours').textContent = totalHours.toFixed(2);
+        });
+
+        $('#downloadExcel').click(function () {
+            const table = document.getElementById('timesheetTable');
+            const csvContent = "data:text/csv;charset=utf-8," + tableToCSV(table);
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "timesheet_entries.csv");
+            document.body.appendChild(link); // Required for Firefox
+            link.click();
+        });
+
+        function tableToCSV(table) {
+            const rows = table.rows;
+            let csvContent = "";
+
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                const cols = row.cells;
+                let rowContent = "";
+
+                for (let j = 0; j < cols.length; j++) {
+                    const cell = cols[j];
+                    rowContent += cell.textContent + ",";
+                }
+
+                csvContent += rowContent.slice(0, -1) + "\r\n"; // Remove last comma and add newline
+            }
+
+            return csvContent;
+        }
+    </script>
+}

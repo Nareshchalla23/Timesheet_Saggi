@@ -1,0 +1,55 @@
+﻿@model TImesheet_demo2.Models.ViewModels.TimesheetFilterViewModel
+
+@{
+    ViewData["Title"] = "Timesheet Entries";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form method="get">
+    <div class="form-group">
+        <label for="startDate">Start Date:</label>
+        <input type="date" id="startDate" name="startDate" value="@Model.StartDate?.ToString("yyyy-MM-dd")" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="endDate">End Date:</label>
+        <input type="date" id="endDate" name="endDate" value="@Model.EndDate?.ToString("yyyy-MM-dd")" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Filter</button>
+    <a href="@Url.Action("Download", new { startDate = Model.StartDate?.ToString("yyyy-MM-dd"), endDate = Model.EndDate?.ToString("yyyy-MM-dd") })" class="btn btn-success">Download Excel</a>
+</form>
+
+@if (Model.Timesheets.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Project</th>
+                <th>Employee ID</th>
+                <th>Date</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Hours Worked</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Timesheets)
+            {
+                <tr>
+                    <td>@item.Project?.ProjectName</td>
+                    <td>@item.User?.UserId</td>
+                    <td>@item.Date.ToString("yyyy-MM-dd")</td>
+                    <td>@item.StartTime.ToString(@"hh\:mm")</td>
+                    <td>@item.EndTime.ToString(@"hh\:mm")</td>
+                    <td>@item.HoursWorked</td>
+                    <td>@item.Status</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No timesheet entries found.</p>
+}
